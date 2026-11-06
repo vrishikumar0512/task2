@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ShopEase — Full Stack E-Commerce Store - Product Catalog">
+  <title>ShopEase — Products</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand-logo">
+        <span class="logo-icon">🛍️</span>
+        <span class="logo-text">ShopEase</span>
+      </a>
+      <nav class="nav-links" id="nav-links-container">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="index.html" class="nav-link active">Products</a>
+        <a href="cart.html" class="nav-link" id="nav-cart-link">Cart (0)</a>
+        <a href="login.html" class="nav-link" id="nav-auth-link">Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Section Header -->
+      <section class="section-header">
+        <h1 class="section-title">Our Products</h1>
+        <p class="section-subtitle">Explore our handpicked collection of premium electronics and accessories.</p>
+      </section>
+
+      <!-- Product Search Section -->
+      <section class="search-section">
+        <form class="search-form" id="product-search-form" role="search" onsubmit="event.preventDefault();">
+          <div class="search-input-wrapper">
+            <span class="search-icon" aria-hidden="true">🔍</span>
+            <input 
+              type="text" 
+              id="product-search-input" 
+              name="search" 
+              class="search-input" 
+              placeholder="Search products by name (e.g. phone, lap, head, shirt)..." 
+              autocomplete="off"
+              aria-label="Search products"
+            />
+            <button type="button" id="search-clear-btn" class="search-clear-btn" aria-label="Clear search" style="display: none;">&times;</button>
+          </div>
+          <button type="submit" id="search-submit-btn" class="btn btn-primary search-submit-btn">Search</button>
+        </form>
+        <div id="search-results-count" class="search-results-count" style="display: none;" aria-live="polite"></div>
+      </section>
+
+      <!-- Dynamic Product Grid -->
+      <section class="products-section">
+        <div class="products-grid" id="products-grid">
+          <!-- Rendered dynamically via JavaScript -->
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>&copy; 2026 ShopEase — Full Stack E-Commerce Store. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/mockData.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>

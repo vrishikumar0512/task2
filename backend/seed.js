@@ -1,0 +1,696 @@
+require('dotenv').config();
+const mongoose = require('mongoose');
+const Product = require('./models/Product');
+
+// Expanded Products Catalog (Step 5 & Feature Expansion: 56 Products across 10 Categories)
+const sampleProducts = [
+  // --- Existing Products (IDs 1 - 6) ---
+  {
+    id: 1,
+    name: "Laptop",
+    price: 50000,
+    image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=600&q=80",
+    category: "Laptops and Computers",
+    shortDescription: "High-performance laptop for everyday work, studying, and entertainment.",
+    description: "High-performance laptop suitable for programming, study, work and entertainment. Equipped with an Intel Core i5 processor, 16GB high-speed RAM, and a fast 512GB SSD. Features a vibrant 15.6-inch Full HD anti-glare display and an all-day battery life.",
+    stock: 25,
+    rating: 4.6
+  },
+  {
+    id: 2,
+    name: "Wireless Headphones",
+    price: 3499,
+    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80",
+    category: "Headphones and Earphones",
+    shortDescription: "Immersive sound with active noise cancellation and ergonomic cushion pads.",
+    description: "Experience rich acoustic clarity and deep bass with premium active noise cancellation. Built with ultra-soft memory foam ear cushions, 40-hour playback on a single charge, and quick Bluetooth 5.3 multi-device pairing.",
+    stock: 35,
+    rating: 4.5
+  },
+  {
+    id: 3,
+    name: "Mechanical Keyboard",
+    price: 2899,
+    image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=600&q=80",
+    category: "Electronics and Accessories",
+    shortDescription: "Tactile mechanical keys with customizable RGB lighting and fast response.",
+    description: "Built for speed and precision, this mechanical keyboard features tactile blue switches, customizable per-key RGB backlighting, anti-ghosting technology, and an aircraft-grade aluminum top plate for exceptional durability.",
+    stock: 30,
+    rating: 4.7
+  },
+  {
+    id: 4,
+    name: "Smart Watch",
+    price: 2499,
+    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80",
+    category: "Smartwatches",
+    shortDescription: "Fitness tracker with heart rate monitor, sleep tracking, and instant alerts.",
+    description: "Stay on top of your health and notifications with this sleek smartwatch. Features a 1.4-inch vibrant touch display, continuous heart rate and SpO2 monitoring, multiple sports modes, water resistance up to 50m, and 7-day battery life.",
+    stock: 40,
+    rating: 4.4
+  },
+  {
+    id: 5,
+    name: "Wireless Mouse",
+    price: 999,
+    image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=600&q=80",
+    category: "Electronics and Accessories",
+    shortDescription: "Ergonomic 2.4GHz wireless mouse with silent clicks and high precision optical sensor.",
+    description: "Designed for all-day comfort, this ergonomic wireless mouse fits naturally in your hand. Offers 2.4GHz wireless connection up to 10 meters, silent acoustic switches, adjustable DPI settings (800/1200/1600), and an energy-saving auto-sleep mode.",
+    stock: 50,
+    rating: 4.5
+  },
+  {
+    id: 6,
+    name: "Smartphone",
+    price: 29999,
+    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80",
+    category: "Mobiles and Smartphones",
+    shortDescription: "Feature-packed smartphone with high-refresh AMOLED screen and dual camera setup.",
+    description: "Experience lightning-fast performance with modern 5G connectivity. Features a 6.5-inch 120Hz Super AMOLED display, 64MP AI dual-camera system with night mode, and a massive 5000mAh battery with 33W fast turbo charging.",
+    stock: 20,
+    rating: 4.6
+  },
+
+  // --- Category: Mobiles and Smartphones (IDs 7 - 11) ---
+  {
+    id: 7,
+    name: "Apple iPhone 15 Pro Smartphone",
+    price: 134900,
+    image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=600&q=80",
+    category: "Mobiles and Smartphones",
+    shortDescription: "Titanium design with A17 Pro chip, Action button, and 48MP main camera.",
+    description: "Forged in aerospace-grade titanium, featuring the groundbreaking A17 Pro chip, customizable Action button, and the most versatile camera system ever in an iPhone with 5x optical zoom on Pro Max.",
+    stock: 15,
+    rating: 4.9
+  },
+  {
+    id: 8,
+    name: "Samsung Galaxy S24 Ultra Phone",
+    price: 129999,
+    image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=600&q=80",
+    category: "Mobiles and Smartphones",
+    shortDescription: "Galaxy AI powered flagship with titanium frame and 200MP camera.",
+    description: "Meet Galaxy S24 Ultra with Galaxy AI built-in. Features a flat 6.8-inch Dynamic AMOLED 2X display, embedded S Pen, titanium shield, and an industry-leading 200MP quad-telephoto camera system.",
+    stock: 18,
+    rating: 4.8
+  },
+  {
+    id: 9,
+    name: "Google Pixel 8 Pro Smartphone",
+    price: 98999,
+    image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80",
+    category: "Mobiles and Smartphones",
+    shortDescription: "Google Tensor G3, best-in-class computational photography, and Super Actua display.",
+    description: "The all-pro phone engineered by Google. Powered by the Google Tensor G3 chip, it delivers state-of-the-art AI, polished aluminum frame with matte back glass, and an incredible triple camera array.",
+    stock: 22,
+    rating: 4.7
+  },
+  {
+    id: 10,
+    name: "OnePlus 12 5G Smartphone",
+    price: 64999,
+    image: "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=600&q=80",
+    category: "Mobiles and Smartphones",
+    shortDescription: "Snapdragon 8 Gen 3 flagship with 4th Gen Hasselblad Camera system.",
+    description: "Redefining fast and smooth with Snapdragon 8 Gen 3, up to 16GB LPDDR5X RAM, 2K 120Hz ProXDR display, 5400mAh battery, and blazing fast 100W SUPERVOOC wired charging.",
+    stock: 30,
+    rating: 4.6
+  },
+  {
+    id: 11,
+    name: "Xiaomi Redmi Note 13 Pro 5G Phone",
+    price: 25999,
+    image: "https://images.unsplash.com/photo-1567581935884-3349723552ca?auto=format&fit=crop&w=600&q=80",
+    category: "Mobiles and Smartphones",
+    shortDescription: "Ultra-clear 200MP OIS camera with 1.5K 120Hz AMOLED curved display.",
+    description: "Exceptional mid-range powerhouse featuring a flagship 200MP camera with Optical Image Stabilization, Snapdragon 7s Gen 2 chipset, Corning Gorilla Glass Victus, and 67W turbo fast charging.",
+    stock: 40,
+    rating: 4.5
+  },
+
+  // --- Category: Laptops and Computers (IDs 12 - 16) ---
+  {
+    id: 12,
+    name: "Apple MacBook Air M2 Laptop",
+    price: 99990,
+    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80",
+    category: "Laptops and Computers",
+    shortDescription: "Strikingly thin design with Apple M2 chip and 18-hour battery life.",
+    description: "Redesigned around the next-generation M2 chip, MacBook Air is impossibly thin and delivers exceptional speed and power efficiency within an all-aluminum unibody enclosure. Features a 13.6-inch Liquid Retina display.",
+    stock: 12,
+    rating: 4.9
+  },
+  {
+    id: 13,
+    name: "Dell XPS 15 OLED Laptop",
+    price: 169990,
+    image: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=600&q=80",
+    category: "Laptops and Computers",
+    shortDescription: "15.6-inch 3.5K OLED InfinityEdge display with Intel Core i7 and RTX graphics.",
+    description: "Stunning craftsmanship crafted from CNC machined aluminum and carbon fiber. Packed with a 13th Gen Intel Core i7 processor, NVIDIA GeForce RTX 4060 graphics, 32GB RAM, and a breathtaking 3.5K OLED touchscreen.",
+    stock: 10,
+    rating: 4.7
+  },
+  {
+    id: 14,
+    name: "HP Spectre x360 2-in-1 Laptop",
+    price: 144990,
+    image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=600&q=80",
+    category: "Laptops and Computers",
+    shortDescription: "Versatile 360-degree convertible with gem-cut design and OLED touchscreen.",
+    description: "Experience premium versatility with the HP Spectre x360. Powered by Intel Evo platform, featuring a 14-inch 2.8K OLED 120Hz touch display, rechargeable tilt pen, quad speakers by Bang & Olufsen, and all-day battery life.",
+    stock: 14,
+    rating: 4.6
+  },
+  {
+    id: 15,
+    name: "Lenovo ThinkPad X1 Carbon Gen 11 Laptop",
+    price: 152000,
+    image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=600&q=80",
+    category: "Laptops and Computers",
+    shortDescription: "Ultralight enterprise flagship built with carbon-fiber weave durability.",
+    description: "The gold standard of business laptops. Weighing just 1.12 kg, featuring an Intel Core i7 vPro processor, legendary spill-resistant ThinkPad keyboard, robust biometric security, and military-grade durability testing.",
+    stock: 16,
+    rating: 4.8
+  },
+  {
+    id: 16,
+    name: "ASUS ROG Zephyrus G14 Gaming Laptop",
+    price: 139990,
+    image: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=600&q=80",
+    category: "Laptops and Computers",
+    shortDescription: "Compact 14-inch gaming powerhouse with AMD Ryzen 9 and RTX 4070.",
+    description: "Portable gaming perfection in an ultra-sleek magnesium-aluminum chassis. Features AMD Ryzen 9 processor, NVIDIA GeForce RTX 4070 GPU, ROG Nebula OLED 120Hz display, and liquid metal cooling.",
+    stock: 15,
+    rating: 4.7
+  },
+
+  // --- Category: Headphones and Earphones (IDs 17 - 21) ---
+  {
+    id: 17,
+    name: "Sony WH-1000XM5 Noise Cancelling Headphones",
+    price: 29990,
+    image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=600&q=80",
+    category: "Headphones and Earphones",
+    shortDescription: "Industry-leading active noise cancellation with 8 microphones and LDAC audio.",
+    description: "With two processors and eight microphones, these headphones deliver unmatched noise cancellation and crystal-clear hands-free calls. Precision-engineered 30mm drivers produce high-resolution audio with 30-hour battery life.",
+    stock: 25,
+    rating: 4.8
+  },
+  {
+    id: 18,
+    name: "Apple AirPods Pro (2nd Gen) Earphones",
+    price: 24900,
+    image: "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?auto=format&fit=crop&w=600&q=80",
+    category: "Headphones and Earphones",
+    shortDescription: "H2 chip powered active noise cancellation with Adaptive Audio and USB-C.",
+    description: "AirPods Pro feature up to 2x more Active Noise Cancellation, plus Adaptive Audio and Transparency mode. Spatial Audio with dynamic head tracking places sound all around you for an immersive acoustic experience.",
+    stock: 35,
+    rating: 4.8
+  },
+  {
+    id: 19,
+    name: "Bose QuietComfort 45 Bluetooth Headphones",
+    price: 26900,
+    image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=600&q=80",
+    category: "Headphones and Earphones",
+    shortDescription: "Iconic quiet comfort with TriPort acoustic architecture and deep bass.",
+    description: "The perfect balance of quiet, comfort, and sound. Proprietary acoustic technology provides deep, clear audio. Ultra-soft synthetic leather and minimal clamping force let you listen comfortably all day long.",
+    stock: 20,
+    rating: 4.7
+  },
+  {
+    id: 20,
+    name: "Sennheiser Momentum 4 Wireless Headphones",
+    price: 27990,
+    image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=600&q=80",
+    category: "Headphones and Earphones",
+    shortDescription: "Audiophile-inspired 42mm sound system with monumental 60-hour battery life.",
+    description: "Enjoy peerless sound quality with Sennheiser's audiophile-inspired transducer system. Features advanced Adaptive Noise Cancellation, Transparency mode, lightweight ergonomic comfort, and up to 60 hours of continuous playback.",
+    stock: 18,
+    rating: 4.6
+  },
+  {
+    id: 21,
+    name: "JBL Tune 760NC Wireless Over-Ear Headphones",
+    price: 5999,
+    image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?auto=format&fit=crop&w=600&q=80",
+    category: "Headphones and Earphones",
+    shortDescription: "JBL Pure Bass Sound with Active Noise Cancelling and 35H battery.",
+    description: "Tune in to your music and tune out the noise. Delivers punchy JBL Pure Bass sound, multi-point connection allowing effortless switching between Bluetooth devices, and lightweight folding design for everyday travel.",
+    stock: 45,
+    rating: 4.4
+  },
+
+  // --- Category: Smartwatches (IDs 22 - 26) ---
+  {
+    id: 22,
+    name: "Apple Watch Series 9 GPS Smartwatch",
+    price: 41900,
+    image: "https://images.unsplash.com/photo-1510017803434-a899398421b3?auto=format&fit=crop&w=600&q=80",
+    category: "Smartwatches",
+    shortDescription: "Powerful S9 SiP chip with Double Tap gesture and bright Always-On display.",
+    description: "The most capable smartwatch with the revolutionary S9 chip. Use double tap to control timers or answer calls without touching the screen. Features ECG, blood oxygen tracking, crash detection, and water resistance up to 50m.",
+    stock: 20,
+    rating: 4.8
+  },
+  {
+    id: 23,
+    name: "Samsung Galaxy Watch 6 Classic Smartwatch",
+    price: 34999,
+    image: "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=600&q=80",
+    category: "Smartwatches",
+    shortDescription: "Rotating bezel design with Sapphire Crystal glass and BioActive health sensor.",
+    description: "Timeless style meets modern wellness. Features a slender rotating bezel, durable sapphire crystal glass, personalized sleep coaching, body composition analysis, and comprehensive ECG monitoring.",
+    stock: 22,
+    rating: 4.6
+  },
+  {
+    id: 24,
+    name: "Garmin Forerunner 265 Running Smartwatch",
+    price: 46490,
+    image: "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&w=600&q=80",
+    category: "Smartwatches",
+    shortDescription: "Brilliant AMOLED touchscreen display with advanced training metrics.",
+    description: "Train brilliantly with a colorful AMOLED touch display. Provides personalized training readiness scores, daily suggested workouts, multi-band GPS tracking, and up to 13 days of battery life in smartwatch mode.",
+    stock: 15,
+    rating: 4.7
+  },
+  {
+    id: 25,
+    name: "Fitbit Charge 6 Fitness Tracker Smartwatch",
+    price: 14999,
+    image: "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?auto=format&fit=crop&w=600&q=80",
+    category: "Smartwatches",
+    shortDescription: "Accurate heart rate tracking with Google apps integration and 7-day battery.",
+    description: "Give your fitness routine a boost with Fitbit Charge 6. Built-in GPS, 40+ exercise modes, Google Maps and Wallet integration, EDA stress management, and up to 7 days of continuous battery life.",
+    stock: 30,
+    rating: 4.5
+  },
+  {
+    id: 26,
+    name: "Amazfit GTR 4 AMOLED Smartwatch",
+    price: 16999,
+    image: "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?auto=format&fit=crop&w=600&q=80",
+    category: "Smartwatches",
+    shortDescription: "Dual-band circularly polarized GPS antenna with 150+ sports modes and 14-day battery.",
+    description: "Premium round smartwatch featuring an anti-glare glass bezel, 1.43-inch HD AMOLED display, real-time navigation, dual-band GPS, Bluetooth phone calls, and an outstanding 14-day battery endurance.",
+    stock: 28,
+    rating: 4.4
+  },
+
+  // --- Category: Electronics and Accessories (IDs 27 - 31) ---
+  {
+    id: 27,
+    name: "GoPro HERO12 Black Action Camera",
+    price: 37990,
+    image: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=600&q=80",
+    category: "Electronics and Accessories",
+    shortDescription: "Incredible 5.3K60 video recording with Emmy-winning HyperSmooth 6.0 stabilization.",
+    description: "Unbelievable image quality, even better HyperSmooth video stabilization, and a huge boost in battery life. Records stunning 5.3K video with High Dynamic Range (HDR) and rugged waterproof construction up to 33 feet.",
+    stock: 20,
+    rating: 4.7
+  },
+  {
+    id: 28,
+    name: "Anker 7-in-1 USB-C Multiport Hub Adapter",
+    price: 3499,
+    image: "https://images.unsplash.com/photo-1625842268584-8f3296236761?auto=format&fit=crop&w=600&q=80",
+    category: "Electronics and Accessories",
+    shortDescription: "4K HDMI, 100W Power Delivery, USB 3.0 data ports, and SD/microSD card slots.",
+    description: "Expand a single USB-C port into a complete workstation hub. Supports vivid 4K@60Hz HDMI video output, high-speed 5Gbps USB data transfers, and 85W pass-through charging for modern laptops.",
+    stock: 50,
+    rating: 4.6
+  },
+  {
+    id: 29,
+    name: "SanDisk 1TB Extreme Portable External SSD",
+    price: 9999,
+    image: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?auto=format&fit=crop&w=600&q=80",
+    category: "Electronics and Accessories",
+    shortDescription: "Blazing 1050MB/s NVMe read speeds with rugged IP55 water and dust resistance.",
+    description: "Fast NVMe solid-state performance in a portable, high-capacity drive perfect for creating content or capturing incredible footage. Features 2-meter drop protection and a handy carabiner loop.",
+    stock: 35,
+    rating: 4.8
+  },
+  {
+    id: 30,
+    name: "Belkin 3-in-1 Fast Wireless Charging Station",
+    price: 8999,
+    image: "https://images.unsplash.com/photo-1622445268047-817bfef75d31?auto=format&fit=crop&w=600&q=80",
+    category: "Electronics and Accessories",
+    shortDescription: "Charge phone, smartwatch, and wireless earbuds simultaneously on one stand.",
+    description: "Declutter your nightstand or workspace with this sleek charging station. Delivers up to 15W fast wireless charging with magnetic alignment, LED charging indicators, and universal Qi compatibility.",
+    stock: 25,
+    rating: 4.5
+  },
+  {
+    id: 31,
+    name: "Logitech MX Master 3S Wireless Mouse",
+    price: 8495,
+    image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=600&q=80",
+    category: "Electronics and Accessories",
+    shortDescription: "8K DPI any-surface sensor with Quiet Clicks and MagSpeed electromagnetic scrolling.",
+    description: "An icon remastered. Work on any surface—even glass—with an 8000 DPI sensor, 90% quieter clicks, and an ultra-fast MagSpeed wheel that scrolls 1,000 lines in a single second.",
+    stock: 40,
+    rating: 4.9
+  },
+
+  // --- Category: Clothing (IDs 32 - 36) ---
+  {
+    id: 32,
+    name: "Classic Oxford Cotton Casual Shirt",
+    price: 1899,
+    image: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=600&q=80",
+    category: "Clothing",
+    shortDescription: "100% combed cotton Oxford weave shirt with button-down collar and tailored fit.",
+    description: "A wardrobe staple crafted from breathable, premium long-staple cotton. Features an authentic Oxford weave texture, reinforced stitching, buttoned cuffs, and an easy-iron wrinkle-resistant finish.",
+    stock: 50,
+    rating: 4.4
+  },
+  {
+    id: 33,
+    name: "Levi's 511 Slim Fit Denim Jeans",
+    price: 3299,
+    image: "https://images.unsplash.com/photo-1542272604-780c96856592?auto=format&fit=crop&w=600&q=80",
+    category: "Clothing",
+    shortDescription: "Modern slim fit denim jeans with built-in stretch for all-day comfort.",
+    description: "The classic slim jean that isn't too tight or too loose. Cut close to the body with authentic 5-pocket styling, sturdy copper rivets, and premium stretch denim engineered for maximum mobility.",
+    stock: 45,
+    rating: 4.6
+  },
+  {
+    id: 34,
+    name: "Premium Organic Cotton Crewneck T-Shirt",
+    price: 899,
+    image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80",
+    category: "Clothing",
+    shortDescription: "Ultra-soft 180 GSM ring-spun cotton tee with pre-shrunk ribbed collar.",
+    description: "Everyday luxury in a pure organic cotton t-shirt. Soft-washed for instant comfort with flatlock side seams that prevent twisting, a tag-free neck label, and vibrant color retention after countless washes.",
+    stock: 70,
+    rating: 4.5
+  },
+  {
+    id: 35,
+    name: "All-Weather Hooded Windbreaker Jacket",
+    price: 3999,
+    image: "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=600&q=80",
+    category: "Clothing",
+    shortDescription: "Water-repellent and windproof outdoor jacket with adjustable hood and mesh lining.",
+    description: "Stay protected against sudden rain and chilly winds. Built with durable ripstop nylon fabric, DWR water-resistant coating, zippered side pockets, and an elastic drawstring hem for a snug fit.",
+    stock: 30,
+    rating: 4.6
+  },
+  {
+    id: 36,
+    name: "Breathable Pure Linen Button-Down Shirt",
+    price: 2499,
+    image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=600&q=80",
+    category: "Clothing",
+    shortDescription: "Naturally cooling linen shirt ideal for warm weather and relaxed casual outings.",
+    description: "Lightweight and airy, this 100% French flax linen shirt ensures superior breathability and effortless drape. Features mother-of-pearl buttons, a curved hemline, and relaxed styling.",
+    stock: 35,
+    rating: 4.3
+  },
+
+  // --- Category: Shoes and Footwear (IDs 37 - 41) ---
+  {
+    id: 37,
+    name: "Nike Air Zoom Pegasus Running Shoes",
+    price: 9495,
+    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80",
+    category: "Shoes and Footwear",
+    shortDescription: "Responsive React foam midsole with dual Zoom Air units for a springy stride.",
+    description: "The trusted workhorse with wings. Engineered mesh upper provides lightweight breathability, while the React foam and forefoot Zoom Air unit deliver smooth transitions and high energy return.",
+    stock: 30,
+    rating: 4.7
+  },
+  {
+    id: 38,
+    name: "Adidas Stan Smith Classic Leather Shoes",
+    price: 7599,
+    image: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=600&q=80",
+    category: "Shoes and Footwear",
+    shortDescription: "Timeless court silhouette with smooth leather upper and perforated 3-Stripes.",
+    description: "An undeniable streetwear icon since 1971. Clean, minimalist white leather construction paired with subtle green heel accents and an OrthoLite sockliner for all-day cushioning.",
+    stock: 25,
+    rating: 4.6
+  },
+  {
+    id: 39,
+    name: "Puma Softride Breathable Walking Shoes",
+    price: 3799,
+    image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=600&q=80",
+    category: "Shoes and Footwear",
+    shortDescription: "Plush Softfoam+ footbed designed for effortless walking and everyday comfort.",
+    description: "Experience extreme comfort with Puma's SOFTRIDE midsole foam. Features an easy slip-on bootie construction with laces, zonal rubber outsole pods for traction, and a flexible knit upper.",
+    stock: 40,
+    rating: 4.4
+  },
+  {
+    id: 40,
+    name: "Clarks Tilden Cap Formal Leather Oxford Shoes",
+    price: 5999,
+    image: "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?auto=format&fit=crop&w=600&q=80",
+    category: "Shoes and Footwear",
+    shortDescription: "Full-grain genuine leather dress shoes with OrthoLite footbed and cap toe.",
+    description: "Sharp, elegant formal shoes for business meetings and weddings. Handcrafted from rich genuine leather with a classic cap toe design, discreet elastic side stretch gores, and durable traction soles.",
+    stock: 20,
+    rating: 4.5
+  },
+  {
+    id: 41,
+    name: "Timberland White Ledge Waterproof Hiking Boots",
+    price: 11999,
+    image: "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?auto=format&fit=crop&w=600&q=80",
+    category: "Shoes and Footwear",
+    shortDescription: "Seam-sealed waterproof leather boots with multi-directional lugged rubber outsoles.",
+    description: "Conquer rough trails and wet weather. Crafted with premium waterproof leather, rustproof speed lace hardware, a padded collar, and EVA midsole for trail-ready shock absorption.",
+    stock: 18,
+    rating: 4.8
+  },
+
+  // --- Category: Bags and Backpacks (IDs 42 - 46) ---
+  {
+    id: 42,
+    name: "SwissGear ScanSmart 15.6 Inch Laptop Backpack",
+    price: 4299,
+    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80",
+    category: "Bags and Backpacks",
+    shortDescription: "TSA-friendly lay-flat laptop compartment with air-flow back padding.",
+    description: "Engineered for tech commuters and frequent flyers. Features ballistic nylon construction, crush-resistant sunglasses pocket, dedicated padded tablet and 15.6-inch laptop sleeves, and ergonomic shoulder straps.",
+    stock: 35,
+    rating: 4.7
+  },
+  {
+    id: 43,
+    name: "Vintage Genuine Leather Messenger Shoulder Bag",
+    price: 4999,
+    image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=600&q=80",
+    category: "Bags and Backpacks",
+    shortDescription: "Handmade full-grain crazy horse leather bag with brass buckles and organizer pockets.",
+    description: "Rustic sophistication for work and college. Features distressed top-grain leather that gains character with age, padded laptop divider, heavy-duty YKK zippers, and an adjustable padded shoulder strap.",
+    stock: 20,
+    rating: 4.5
+  },
+  {
+    id: 44,
+    name: "Under Armour Undeniable 5.0 Travel Duffel Bag",
+    price: 3499,
+    image: "https://images.unsplash.com/photo-1577733966973-d680bffd2e80?auto=format&fit=crop&w=600&q=80",
+    category: "Bags and Backpacks",
+    shortDescription: "UA Storm water-resistant finish with vented shoe pocket and 58L capacity.",
+    description: "Tough, lightweight duffel built for gym sessions and weekend getaways. Features abrasion-resistant bottom and side panels, a large vented compartment for muddy shoes or laundry, and multiple slip pockets.",
+    stock: 40,
+    rating: 4.6
+  },
+  {
+    id: 45,
+    name: "Osprey Daylite Plus Commuter Travel Backpack",
+    price: 5299,
+    image: "https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?auto=format&fit=crop&w=600&q=80",
+    category: "Bags and Backpacks",
+    shortDescription: "Versatile 20L daypack with mesh-covered die-cut foam backpanel.",
+    description: "Lightweight, simple, and comfortable. Features a multifunction padded sleeve for a 15-inch laptop or hydration reservoir, dual stretch mesh side water bottle pockets, and bluesign approved recycled fabrics.",
+    stock: 25,
+    rating: 4.8
+  },
+  {
+    id: 46,
+    name: "Travelon Anti-Theft Crossbody Bag",
+    price: 2799,
+    image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=600&q=80",
+    category: "Bags and Backpacks",
+    shortDescription: "Slash-resistant body and straps with RFID blocking card slots and locking zippers.",
+    description: "Travel with complete peace of mind. Equipped with 5-point anti-theft security system, slash-resistant mesh panels, locking zipper compartments, RFID blocking passport pockets, and tethered key clip with LED light.",
+    stock: 30,
+    rating: 4.4
+  },
+
+  // --- Category: Home and Kitchen (IDs 47 - 51) ---
+  {
+    id: 47,
+    name: "Philips Daily Collection 1.5L Electric Kettle",
+    price: 1799,
+    image: "https://images.unsplash.com/photo-1594213114663-ddf4f24cf372?auto=format&fit=crop&w=600&q=80",
+    category: "Home and Kitchen",
+    shortDescription: "Food-grade stainless steel electric kettle with auto-off and boil-dry protection.",
+    description: "Boil water quickly and safely in under 3 minutes. Built with food-grade SUS304 stainless steel body, 360-degree cordless pirouette base, wide opening spring lid for easy cleaning, and steam sensor safety cutoff.",
+    stock: 40,
+    rating: 4.5
+  },
+  {
+    id: 48,
+    name: "Prestige Non-Stick Ceramic Induction Cookware Set",
+    price: 4899,
+    image: "https://images.unsplash.com/photo-1584990347449-39bbf8703e87?auto=format&fit=crop&w=600&q=80",
+    category: "Home and Kitchen",
+    shortDescription: "3-piece induction-compatible cookware set with non-toxic granite non-stick coating.",
+    description: "Healthy cooking made effortless. Includes a 24cm fry pan, 24cm kadai with tempered glass lid, and 28cm flat dosa tawa. Free from PFOA and heavy metals, with stay-cool bakelite handles.",
+    stock: 25,
+    rating: 4.4
+  },
+  {
+    id: 49,
+    name: "Instant Vortex Plus 6-in-1 Digital Air Fryer 5.7L",
+    price: 9999,
+    image: "https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&w=600&q=80",
+    category: "Home and Kitchen",
+    shortDescription: "EvenCrisp technology air fryer that crisps with 95% less oil and odor-erase filter.",
+    description: "Fry, roast, broil, bake, reheat, and dehydrate in one sleek appliance. Features a clear viewing window with interior light, intuitive digital touchscreen, non-stick dishwasher-safe basket, and ultra-fast preheating.",
+    stock: 20,
+    rating: 4.8
+  },
+  {
+    id: 50,
+    name: "De'Longhi Dedica Pump Espresso Coffee Maker",
+    price: 21990,
+    image: "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?auto=format&fit=crop&w=600&q=80",
+    category: "Home and Kitchen",
+    shortDescription: "15-bar professional pressure espresso machine with manual cappuccino frother.",
+    description: "Brew authentic barista-quality espresso, latte, and cappuccino at home. Slim 6-inch profile fits any countertop, featuring thermoblock heating system, adjustable milk frothing wand, and customizable coffee flow.",
+    stock: 15,
+    rating: 4.7
+  },
+  {
+    id: 51,
+    name: "Bajaj FX-11 Food Factory Multi-Blade Processor",
+    price: 6499,
+    image: "https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?auto=format&fit=crop&w=600&q=80",
+    category: "Home and Kitchen",
+    shortDescription: "600W motor with 3 stainless steel jars, citrus juicer, and slicing/shredding discs.",
+    description: "The complete all-in-one kitchen assistant. Handles chopping, kneading dough, shredding, slicing, pureeing, and juicing with ease. Features sturdy interlocking safety lids and 3-speed rotary pulse control.",
+    stock: 25,
+    rating: 4.3
+  },
+
+  // --- Category: Beauty and Personal Care (IDs 52 - 56) ---
+  {
+    id: 52,
+    name: "Oral-B Pro 3 Electric Rechargeable Toothbrush",
+    price: 3999,
+    image: "https://images.unsplash.com/photo-1559591937-e1032397e467?auto=format&fit=crop&w=600&q=80",
+    category: "Beauty and Personal Care",
+    shortDescription: "360-degree visible gum pressure sensor with round head 3D cleaning technology.",
+    description: "Remove up to 100% more plaque than a standard manual toothbrush. Features 3 brushing modes (Daily Clean, Whitening, Sensitive), 2-minute professional timer, and long-lasting lithium-ion battery with travel case.",
+    stock: 35,
+    rating: 4.6
+  },
+  {
+    id: 53,
+    name: "Dyson Supersonic Ionic Professional Hair Dryer",
+    price: 34900,
+    image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80",
+    category: "Beauty and Personal Care",
+    shortDescription: "Intelligent heat control with Air Multiplier technology and 5 styling attachments.",
+    description: "Fast drying with no extreme heat damage. Powered by the small, powerful Dyson digital motor V9, measuring air temperature 40 times a second to regulate heat and protect hair's natural shine.",
+    stock: 12,
+    rating: 4.9
+  },
+  {
+    id: 54,
+    name: "Minimalist 10% Vitamin C Radiance Face Serum",
+    price: 699,
+    image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600&q=80",
+    category: "Beauty and Personal Care",
+    shortDescription: "Pure Ethyl Ascorbic Acid serum with Centella water for luminous, even-toned skin.",
+    description: "Gently brightens dull skin and reduces dark spots without irritation. Formulated with 10% stable Vitamin C, 1% Acetyl Glucosamine, and soothing Centella Asiatica leaf water in a fragrance-free, dermatologically tested formula.",
+    stock: 60,
+    rating: 4.6
+  },
+  {
+    id: 55,
+    name: "Philips Series 5000 Cordless Beard Trimmer",
+    price: 2499,
+    image: "https://images.unsplash.com/photo-1621607512214-68297480165e?auto=format&fit=crop&w=600&q=80",
+    category: "Beauty and Personal Care",
+    shortDescription: "Lift & Trim PRO system with self-sharpening stainless steel blades and 40 lock-in lengths.",
+    description: "Even trim in one pass. The innovative Lift & Trim PRO system guides low-lying hairs to the blades for a precise cut. Features 40 adjustable length settings (0.4mm–20mm) and 90 minutes of cordless runtime.",
+    stock: 45,
+    rating: 4.5
+  },
+  {
+    id: 56,
+    name: "Moroccanoil Hydrating Argan Oil Hair Shampoo",
+    price: 2100,
+    image: "https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&w=600&q=80",
+    category: "Beauty and Personal Care",
+    shortDescription: "Moisture-balancing shampoo infused with antioxidant-rich argan oil and vitamins.",
+    description: "Infuse dehydrated, dry hair with much-needed moisture. Gentle, color-safe formula infused with antioxidant argan oil, Vitamins A and E, and moisture-attracting red algae for healthy, manageable hair.",
+    stock: 30,
+    rating: 4.7
+  }
+];
+
+async function seedDatabase() {
+  const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/shopease';
+  const sanitizedUri = mongoUri.replace(/\/\/([^:]+):([^@]+)@/, '//$1:****@');
+
+  try {
+    console.log(`Connecting to MongoDB (${sanitizedUri}) for seeding...`);
+    await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 5000 });
+    console.log('MongoDB connected successfully for seeding.');
+
+    let insertedCount = 0;
+    let existingCount = 0;
+
+    for (const item of sampleProducts) {
+      // Safe, repeatable check: only insert if unique ID does not already exist
+      const exists = await Product.findOne({ id: item.id });
+      if (!exists) {
+        await Product.create(item);
+        console.log(`+ Inserted product [ID: ${item.id}]: ${item.name} (${item.category})`);
+        insertedCount++;
+      } else {
+        // Update stock, rating, and category if needed without altering user cart / orders
+        await Product.updateOne(
+          { id: item.id },
+          {
+            $set: {
+              category: item.category,
+              stock: item.stock || 25,
+              rating: item.rating || 4.5
+            }
+          }
+        );
+        existingCount++;
+      }
+    }
+
+    const totalProducts = await Product.countDocuments();
+    console.log(`Seeding complete: ${insertedCount} inserted, ${existingCount} already existed/updated. Total products in database: ${totalProducts}`);
+  } catch (error) {
+    console.error('Database seeding failed:', error.message);
+  } finally {
+    await mongoose.connection.close();
+    console.log('MongoDB connection closed.');
+  }
+}
+
+// Export sampleProducts for test verification
+module.exports = { sampleProducts, seedDatabase };
+
+if (require.main === module) {
+  seedDatabase();
+}

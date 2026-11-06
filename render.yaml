@@ -1,0 +1,20 @@
+# ==========================================================
+# Render Blueprint Configuration for ShopEase
+# ==========================================================
+services:
+  - type: web
+    name: shopease
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        value: "*"

@@ -1,0 +1,28 @@
+{
+  "name": "shopease",
+  "version": "1.0.0",
+  "description": "ShopEase — Full Stack E-Commerce Store",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "seed": "node backend/seed.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "ecommerce",
+    "express",
+    "javascript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.6",
+    "express": "^4.22.3",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.11.0"
+  }
+}

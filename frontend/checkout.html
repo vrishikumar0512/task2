@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ShopEase — Full Stack E-Commerce Store - Checkout">
+  <title>ShopEase — Checkout</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand-logo">
+        <span class="logo-icon">🛍️</span>
+        <span class="logo-text">ShopEase</span>
+      </a>
+      <nav class="nav-links" id="nav-links-container">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="index.html" class="nav-link">Products</a>
+        <a href="cart.html" class="nav-link" id="nav-cart-link">Cart (0)</a>
+        <a href="login.html" class="nav-link" id="nav-auth-link">Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <section class="section-header">
+        <h1 class="section-title">Checkout</h1>
+        <p class="section-subtitle">Complete your delivery information to place your order</p>
+      </section>
+
+      <!-- Alert Box -->
+      <div id="checkout-alert" class="auth-alert" role="alert"></div>
+
+      <!-- Empty Cart View (Displayed dynamically if cart is empty) -->
+      <div id="checkout-empty-cart" class="empty-cart-card" style="display: none;">
+        <div class="empty-cart-icon">🛒</div>
+        <h2 class="empty-cart-title">Your cart is empty.</h2>
+        <p class="empty-cart-text">You need at least one product in your shopping cart to proceed with checkout.</p>
+        <a href="index.html" class="btn btn-primary">Continue Shopping</a>
+      </div>
+
+      <!-- Checkout Container -->
+      <div id="checkout-main-content" class="checkout-layout">
+        <!-- Left Column: Customer & Delivery Details Form -->
+        <div class="checkout-form-column">
+          <form id="checkout-form" class="checkout-card" novalidate>
+            <!-- Customer Information -->
+            <div class="checkout-section-block">
+              <h2 class="checkout-block-title">Customer Information</h2>
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="checkout-name" class="form-label">Full Name</label>
+                  <input 
+                    type="text" 
+                    id="checkout-name" 
+                    name="name" 
+                    class="form-input" 
+                    placeholder="Enter your full name" 
+                    required 
+                    autocomplete="name"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="checkout-email" class="form-label">Email Address</label>
+                  <input 
+                    type="email" 
+                    id="checkout-email" 
+                    name="email" 
+                    class="form-input form-input-readonly" 
+                    placeholder="your-email@example.com" 
+                    readonly 
+                    required 
+                    autocomplete="email"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Delivery Information -->
+            <div class="checkout-section-block">
+              <h2 class="checkout-block-title">Delivery Information</h2>
+              
+              <div class="form-group">
+                <label for="checkout-address" class="form-label">Street Address</label>
+                <input 
+                  type="text" 
+                  id="checkout-address" 
+                  name="address" 
+                  class="form-input" 
+                  placeholder="House / Flat No., Street, Area" 
+                  required 
+                  autocomplete="street-address"
+                />
+              </div>
+
+              <div class="form-row-3">
+                <div class="form-group">
+                  <label for="checkout-city" class="form-label">City</label>
+                  <input 
+                    type="text" 
+                    id="checkout-city" 
+                    name="city" 
+                    class="form-input" 
+                    placeholder="e.g. Coimbatore" 
+                    required 
+                    autocomplete="address-level2"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="checkout-state" class="form-label">State</label>
+                  <input 
+                    type="text" 
+                    id="checkout-state" 
+                    name="state" 
+                    class="form-input" 
+                    placeholder="e.g. Tamil Nadu" 
+                    required 
+                    autocomplete="address-level1"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="checkout-pincode" class="form-label">Pincode</label>
+                  <input 
+                    type="text" 
+                    id="checkout-pincode" 
+                    name="pincode" 
+                    class="form-input" 
+                    placeholder="6-digit pincode" 
+                    maxlength="6" 
+                    required 
+                    autocomplete="postal-code"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="checkout-phone" class="form-label">Phone Number</label>
+                <input 
+                  type="tel" 
+                  id="checkout-phone" 
+                  name="phone" 
+                  class="form-input" 
+                  placeholder="10-digit mobile number" 
+                  maxlength="10" 
+                  required 
+                  autocomplete="tel"
+                />
+                <span class="form-hint">We will call this number for delivery updates</span>
+              </div>
+            </div>
+
+            <!-- Payment Method -->
+            <div class="checkout-section-block">
+              <h2 class="checkout-block-title">Payment Method</h2>
+              <div class="payment-option-card">
+                <input type="radio" id="cod-payment" name="paymentMethod" value="cod" checked disabled />
+                <label for="cod-payment" class="payment-option-label">
+                  <span class="payment-icon">💵</span>
+                  <div class="payment-text">
+                    <strong>Cash on Delivery (COD)</strong>
+                    <span class="payment-subtext">Pay cash or UPI upon delivery at your doorstep</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <button type="submit" id="place-order-btn" class="btn btn-primary btn-block checkout-submit-btn">
+              Place Order
+            </button>
+          </form>
+        </div>
+
+        <!-- Right Column: Order Summary -->
+        <div class="checkout-summary-column">
+          <div class="checkout-card checkout-summary-card">
+            <h2 class="checkout-block-title">Order Summary</h2>
+
+            <div class="checkout-items-list" id="checkout-items-list">
+              <!-- Rendered dynamically from localStorage shopease_cart -->
+            </div>
+
+            <div class="checkout-totals-block">
+              <div class="summary-line">
+                <span>Total Items:</span>
+                <strong id="checkout-total-items">0</strong>
+              </div>
+              <div class="summary-line">
+                <span>Delivery:</span>
+                <span class="text-free-shipping">FREE</span>
+              </div>
+              <div class="summary-line summary-total-line">
+                <span>Total Amount:</span>
+                <strong class="summary-subtotal-price" id="checkout-total-amount">₹0</strong>
+              </div>
+            </div>
+
+            <div class="checkout-security-badge">
+              <span>🔒 Safe & Secure Checkout</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>&copy; 2026 ShopEase — Full Stack E-Commerce Store. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/mockData.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>

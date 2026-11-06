@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ShopEase — Full Stack E-Commerce Store - Order Success">
+  <title>ShopEase — Order Placed Successfully</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand-logo">
+        <span class="logo-icon">🛍️</span>
+        <span class="logo-text">ShopEase</span>
+      </a>
+      <nav class="nav-links" id="nav-links-container">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="index.html" class="nav-link">Products</a>
+        <a href="cart.html" class="nav-link" id="nav-cart-link">Cart (0)</a>
+        <a href="login.html" class="nav-link" id="nav-auth-link">Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container auth-wrapper">
+      <div class="order-success-card">
+        <div class="order-success-icon-badge">✅</div>
+        <h1 class="order-success-title">Order Placed Successfully!</h1>
+        <p class="order-success-subtitle">Thank you for your purchase. We are getting your order ready to be delivered.</p>
+
+        <div class="order-details-box">
+          <div class="order-detail-row">
+            <span class="order-detail-label">Order ID:</span>
+            <strong class="order-detail-value" id="success-order-id">Loading...</strong>
+          </div>
+          <div class="order-detail-row">
+            <span class="order-detail-label">Status:</span>
+            <span class="order-status-tag" id="success-order-status">Placed</span>
+          </div>
+          <div class="order-detail-row order-detail-total-row">
+            <span class="order-detail-label">Total Amount:</span>
+            <strong class="order-detail-value order-total-highlight" id="success-order-amount">₹0</strong>
+          </div>
+          <div class="order-detail-row">
+            <span class="order-detail-label">Payment Mode:</span>
+            <span class="order-detail-value">Cash on Delivery</span>
+          </div>
+        </div>
+
+        <div class="order-success-actions">
+          <a href="index.html" class="btn btn-primary btn-block">Continue Shopping</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>&copy; 2026 ShopEase — Full Stack E-Commerce Store. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/mockData.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>
